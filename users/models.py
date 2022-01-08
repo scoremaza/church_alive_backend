@@ -2,8 +2,11 @@ import os
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.base import Model
 from django.db.models.enums import Choices, ChoicesMeta
+from django.db.models.fields.related import ForeignKey
 from django.utils.deconstruct import deconstructible
+
 
 @deconstructible
 class GenerateProfileImagePath(object):
@@ -22,63 +25,144 @@ class GenerateProfileImagePath(object):
         name = f'profile_image.ext'
         return os.path.join(path, name)
  
+ 
 user_profile_image_path = GenerateProfileImagePath()   
 
+
+class PositionType(models.Model):
+    '''
+    Model definition for PositionType
+    Here the user is assign a position within the organization 
+    allowing access and assignment capabilities enabling allocation
+    throughout the system.
+    '''
+    position = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    position = models.CharField(max_length=150)
+    sort_order = models.IntegerField(default=-1)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        """Meta definition for VisibilityLevel."""
+        
+        verbose_name = "Position"
+        verbose_name_plural = "Positions"
+
+    def __str__(self):
+        """Unicode representation of VisibilityLevel."""
+                     
+        return f'{self.position}'
+
+    def get_absolute_url(self):
+        """Return absolute url for VisibilityLevel."""
+        
+        pass
+    
+    
 class Profile (models.Model):
     '''
+    Model definition for Profile
     Here the user will create its existence in the appplication
     with features to set privacy and adding friends will be 
-    controlled by this profile.  
+    controlled by this profile. Using User from the internal structure 
+    of Django as the manager to keep things together. 
     '''
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    profile_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.FileField(upload_to=user_profile_image_path, blank=True, null=True)
     profile_name = models.CharField(max_length=200, null=True)
     date_of_birth = models.DateField(null=True)
     create_date = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
+    position_type = models.ForeignKey(PositionType, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        """Meta definition for VisibilityLevel."""
+        
         verbose_name = "Profile"
         verbose_name_plural = "Profiles"
 
     def __str__(self):
+        """Unicode representation of VisibilityLevel."""
+         
         return f'{self.user.username}\'s Profile'
 
     def get_absolute_url(self):
+        """Return absolute url for VisibilityLevel."""
+        
         pass
+
+
+class VisibilityLevel(models.Model):
+    """
+    Model definition for VisibilityLevel.
+    Here the user will give wether a friend could have the 
+    capabilities to view or send information. 
+    """    
+
+    visibility_level_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=150)
+
+    class Meta:
+        """Meta definition for VisibilityLevel."""
+
+        verbose_name = 'VisibilityLevel'
+        verbose_name_plural = 'VisibilityLevels'
+
+    def __str__(self):
+        """Unicode representation of VisibilityLevel."""
+        return self.name
+
+
+    def get_absolute_url(self):
+        """Return absolute url for VisibilityLevel."""
+        pass
+
+    
+
+
 
 
 class PrivacyFlagType(models.Model):
     '''
+    Model definition for PrivacyFlagType.
+    Here we have the values of information such as questions asked to the 
+    user and the user answers will be stored in PrivacyFlag
     
     '''
     
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    privacy_flag_type_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     field_name = models.CharField(max_length=150,blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     sort_order = models.IntegerField(default=-1)
 
     class Meta:
+        """Meta definition for VisibilityLevel."""
+        
         verbose_name = "PrivacyFlagType"
         verbose_name_plural = "PrivacyFlagTypes"
 
     def __str__(self):
+        """Unicode representation of VisibilityLevel."""
+        
         return self.field_name
 
     def get_absolute_url(self):
+        """Return absolute url for VisibilityLevel."""
+        
         pass
     
     
 class PrivacyFlag(models.Model):
     '''
-    Here we will allocate the situations of controling what 
+    Model definition for PrivacyFlag
+    Here we will allocate the values and controling what 
     could be seen and by whom. 
     '''
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    privacy_flag_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     privacyflagtype = models.ForeignKey(PrivacyFlagType, on_delete=models.CASCADE)
+    visibility_level = models.ForeignKey(VisibilityLevel, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -87,6 +171,90 @@ class PrivacyFlag(models.Model):
 
     def __str__(self):
         return f'{self.profile.user.username} has {self.privacyflagtype.field_name} privacy'
+
+    def get_absolute_url(self):
+        pass
+ 
+ 
+class ProfileAttributeType(models.Model):
+     '''
+     Model definition for
+     '''
+     profile_attribute_type_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+     attribute_type =  models.CharField(max_length=500)
+     sort_order = models.IntegerField(default=-1)
+     privacy_flag_type = models.ForeignKey(PrivacyFlagType, on_delete=models.CASCADE)
+     
+     class Meta:
+        verbose_name = "ProfileAttributeType"
+        verbose_name_plural = "ProfileAttributeTypes"
+
+     def __str__(self):
+        return f'{self.profile.user.username} has {self.privacyflagtype.field_name} privacy'
+
+     def get_absolute_url(self):
+        pass
+
+    
+class ProfileAttribute(models.Model):
+    '''
+    '''
+    
+    profile_attribute_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    profile_attribute_type = models.ForeignKey(ProfileAttributeType, on_delete=models.CASCADE)
+    response = models.CharField(max_length=250)
+    createDate = models.DateField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = "ProfileAttribute"
+        verbose_name_plural = "ProfileAttributes"
+
+    def __str__(self):
+        return f'{self.profile.user.username} response {self.response}'
+
+    def get_absolute_url(self):
+        pass
+    
+    
+class AlertType(models.Model):
+    '''
+    '''
+    
+    alert_type_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=150)
+    
+    class Meta:
+        verbose_name = "AlertType"
+        verbose_name_plural = "AlertTypes"
+
+    def __str__(self):
+        return f'{self.name}'
+
+    def get_absolute_url(self):
+        pass
+   
+    
+class Alert(models.Model):
+    '''
+    '''
+    
+    alert_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    create_date = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    alert_type = models.ForeignKey(AlertType, on_delete=models.CASCADE)
+    is_hidden = models.BooleanField(default=False)
+    message = models.TextField()
+    
+    
+    class Meta:
+        verbose_name = "Alert"
+        verbose_name_plural = "Alerts"
+
+    def __str__(self):
+        return f'{self.alert_type.name} has this {self.message}'
 
     def get_absolute_url(self):
         pass
