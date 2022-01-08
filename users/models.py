@@ -36,7 +36,7 @@ class PositionType(models.Model):
     allowing access and assignment capabilities enabling allocation
     throughout the system.
     '''
-    position = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    position_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     position = models.CharField(max_length=150)
     sort_order = models.IntegerField(default=-1)
     timestamp = models.DateTimeField(auto_now_add=True)
