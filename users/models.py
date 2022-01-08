@@ -166,19 +166,24 @@ class PrivacyFlag(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     
     class Meta:
+        """Meta definition for VisibilityLevel."""
+        
         verbose_name = "PrivacyFlag"
         verbose_name_plural = "PrivacyFlags"
 
     def __str__(self):
+        """Unicode representation of VisibilityLevel."""
         return f'{self.profile.user.username} has {self.privacyflagtype.field_name} privacy'
 
     def get_absolute_url(self):
+        """Return absolute url for VisibilityLevel."""
         pass
  
  
 class ProfileAttributeType(models.Model):
      '''
-     Model definition for
+     Model definition for ProfileAttributeType
+     Here we have the type of values enter by the user 
      '''
      profile_attribute_type_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
      attribute_type =  models.CharField(max_length=500)
@@ -186,18 +191,24 @@ class ProfileAttributeType(models.Model):
      privacy_flag_type = models.ForeignKey(PrivacyFlagType, on_delete=models.CASCADE)
      
      class Meta:
+        """Meta definition for VisibilityLevel."""
+         
         verbose_name = "ProfileAttributeType"
         verbose_name_plural = "ProfileAttributeTypes"
 
      def __str__(self):
+        """Unicode representation of VisibilityLevel."""
         return f'{self.profile.user.username} has {self.privacyflagtype.field_name} privacy'
 
      def get_absolute_url(self):
+        """Return absolute url for VisibilityLevel."""
         pass
 
     
 class ProfileAttribute(models.Model):
     '''
+    Model definition for ProfileAttribute.
+    Here we have the values themselves given by the user 
     '''
     
     profile_attribute_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -208,36 +219,55 @@ class ProfileAttribute(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     
     class Meta:
+        """Meta definition for VisibilityLevel."""
+        
         verbose_name = "ProfileAttribute"
         verbose_name_plural = "ProfileAttributes"
 
     def __str__(self):
+        """Unicode representation of VisibilityLevel."""
         return f'{self.profile.user.username} response {self.response}'
 
     def get_absolute_url(self):
+        """Return absolute url for VisibilityLevel."""
+        
         pass
     
     
 class AlertType(models.Model):
     '''
+    Model definition for  AlertType.
+    Here we have the user with the capability to have alerts from different 
+    news form their friends 
     '''
     
     alert_type_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=150)
     
     class Meta:
+        """Meta definition for VisibilityLevel."""
+        
         verbose_name = "AlertType"
         verbose_name_plural = "AlertTypes"
 
     def __str__(self):
+        """Unicode representation of VisibilityLevel."""
         return f'{self.name}'
 
     def get_absolute_url(self):
+        """Return absolute url for VisibilityLevel."""
+        
         pass
    
     
 class Alert(models.Model):
     '''
+    Model definition for Alert.
+    Here we have the whole set completion for the 
+    Alerts. Allow the system to use the functionality 
+    of hidding and allowing users to manage the completion
+    of there news feed, with notifications.  
+    
     '''
     
     alert_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -250,11 +280,16 @@ class Alert(models.Model):
     
     
     class Meta:
+        """Meta definition for VisibilityLevel."""
+        
         verbose_name = "Alert"
         verbose_name_plural = "Alerts"
 
     def __str__(self):
+        """Unicode representation of VisibilityLevel."""    
         return f'{self.alert_type.name} has this {self.message}'
 
     def get_absolute_url(self):
+        """Return absolute url for VisibilityLevel."""
+        
         pass
